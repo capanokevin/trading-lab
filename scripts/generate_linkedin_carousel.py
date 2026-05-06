@@ -13,6 +13,9 @@ ROOT = Path(__file__).resolve().parents[1]
 DB_PATH = ROOT / "data" / "trading_paper.sqlite3"
 EXPORT_DIR = ROOT / "data" / "exports" / "linkedin-carousel-trader-digitale-2026-05-05"
 PDF_PATH = ROOT / "data" / "exports" / "linkedin-carousel-trader-digitale-2026-05-05.pdf"
+GITHUB_URL = "https://github.com/capanokevin/trading-lab"
+GITHUB_DISPLAY_URL = "github.com/capanokevin/trading-lab"
+SNAPSHOT_END_ISO = "2026-05-05T23:59:59Z"
 
 W = 1080
 H = 1350
@@ -161,10 +164,11 @@ def stats() -> dict[str, object]:
         SELECT strategy, closed_at, realized_pnl, entry_fee, exit_fee
         FROM paper_positions
         WHERE status = 'CLOSED'
+          AND closed_at <= ?
         ORDER BY closed_at
-        """
+        """,
+        (SNAPSHOT_END_ISO,),
     ).fetchall()
-    replay = conn.execute("SELECT COUNT(*) FROM decision_replay").fetchone()[0]
     versions = (ROOT / "docs" / "strategy_versions.md").read_text().count(
         "### `momentum_context_v"
     )
@@ -195,7 +199,7 @@ def stats() -> dict[str, object]:
         "pnl": pnl,
         "fees": fees,
         "win_rate": win_rate,
-        "replay": replay,
+        "replay": "20k+",
         "cumulative": cumulative,
         "first_closed_at": first_closed_at,
         "last_closed_at": last_closed_at,
@@ -303,7 +307,7 @@ def slide_5(total: int, s: dict[str, object]) -> Image.Image:
     data = [
         ("versioni", str(s["versions"]), GREEN),
         ("trade paper", str(s["trades"]), GREEN),
-        ("decision replay", f"{int(s['replay']):,}".replace(",", "."), BLUE),
+        ("decision replay", str(s["replay"]), BLUE),
         ("PnL netto", money(float(s["pnl"])), RED),
         ("fee simulate", money(float(s["fees"])), GREEN),
         ("win rate", f"{float(s['win_rate']):.1f}%", GREEN),
@@ -352,7 +356,7 @@ def slide_8(total: int) -> Image.Image:
     wrapped(draw, "Il codice va su GitHub.", (M, 220), W - 2 * M, font(78, bold=True), BLACK, 12)
     wrapped(draw, "Non come bot per fare soldi. Come esperimento open, leggibile e migliorabile.", (M, 515), W - 2 * M, font(43), BLACK, 12)
     draw.rounded_rectangle((M, 835, W - M, 955), radius=32, fill=BLACK)
-    draw.text((M + 34, 875), "github.com/tuo-username/trading-lab", font=font(31, bold=True), fill=YELLOW)
+    draw.text((M + 34, 875), GITHUB_DISPLAY_URL, font=font(31, bold=True), fill=YELLOW)
     draw.rounded_rectangle((M, 1030, W - M, 1158), radius=38, fill=PAPER, outline=BLACK, width=3)
     wrapped(draw, "Se avessi un dev AI sempre accanto, che prodotto verticale costruiresti?", (M + 36, 1060), W - 2 * M - 72, font(34, bold=True), BLACK, 8)
     footer(draw, 8, total, BLACK)

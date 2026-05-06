@@ -1,8 +1,20 @@
 # Crypto Trading Control Plane
 
+[![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-111318?style=for-the-badge&logo=python&logoColor=e8ff5f)](#quick-start)
+[![Local First](https://img.shields.io/badge/Local--first-paper%20trading-e8ff5f?style=for-the-badge)](#cosa-fa)
+[![No Live Trading](https://img.shields.io/badge/Live%20execution-not%20armed-d84c4c?style=for-the-badge)](#disclaimer)
+
 Un laboratorio desktop-first e local-first per osservare mercati crypto, simulare trade, misurare costi e capire perche' una strategia ha fatto o non ha fatto qualcosa.
 
 Questo progetto nasce come esperimento di `vibe coding` con AI: non e' un bot magico, non promette rendimento e non esegue ordini reali nella configurazione pubblica.
+
+## In una frase
+
+Un control plane locale per rispondere a tre domande:
+
+- cosa ha visto il sistema?
+- perche' ha fatto o non ha fatto un trade?
+- quanto e' costato davvero dopo fee e slippage stimato?
 
 ## Cosa fa
 
@@ -13,6 +25,14 @@ Questo progetto nasce come esperimento di `vibe coding` con AI: non e' un bot ma
 - mostra una dashboard locale in italiano
 - include un companion desktop macOS opzionale
 - misura fee, slippage stimato, PnL lordo/netto e failure analysis
+
+## Cosa non e'
+
+- non e' una strategia profittevole validata
+- non e' consulenza finanziaria
+- non e' copy trading
+- non e' un sistema live pronto per capitale reale
+- non contiene chiavi, database personali o export locali
 
 ## Stato esperimento
 
@@ -27,6 +47,19 @@ Snapshot pubblico al 5 maggio 2026:
 - orizzonte: 9 aprile - 5 maggio 2026, circa 26 giorni
 
 Il campione e' volutamente dichiarato acerbo: e' utile per raccontare l'esperimento e validare l'infrastruttura, non per valutare seriamente la performance della strategia.
+
+## Architettura
+
+```mermaid
+flowchart LR
+  MarketData["Hyperliquid public market data"] --> Collector["Collector"]
+  Collector --> PaperEngine["Paper engine"]
+  PaperEngine --> Risk["Risk manager"]
+  Risk --> Ledger["Local event ledger"]
+  Ledger --> Dashboard["Local dashboard"]
+  Ledger --> Replay["Decision replay"]
+  Dashboard --> Review["Daily review"]
+```
 
 ## Disclaimer
 
